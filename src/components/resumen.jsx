@@ -4,12 +4,17 @@ import ResumenProducto from "./resumenProducto";
 
 export default function Resumen(){
 
-    const {pedido, total} = useQuiosco(); 
+    const {pedido, total, handleSubmitNewOrder} = useQuiosco(); 
 
     const comprobarPedido = ()=> {
        return pedido.length === 0
     }
+    
+    const handleSubmit = (e)=> {
+        e.preventDefault();
 
+        handleSubmitNewOrder(); 
+    }
     return(
         <>
         <aside className="w-72 h-screen overflow-y-scroll p-5">

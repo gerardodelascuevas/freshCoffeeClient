@@ -19,7 +19,6 @@ function QuioscoProvider({children}){
 
     const [total, setTotal] = useState(0);
 
-
     const handleClickCategoria = (id)=> {
         const categoria = categorias.filter(x=> x.id === id)[0]
         setCategoriaActual(categoria)
@@ -64,7 +63,7 @@ function QuioscoProvider({children}){
         setTotal(nuevoTotal);
     }, [pedido])
 
-    const obtenerCategorias = async()=> {
+    const obtenerCategorias = async()=> {        
         try {
             const categorias = await clienteAxios(`/categorias`)            
             setCategorias(categorias.data.data);
@@ -77,6 +76,34 @@ function QuioscoProvider({children}){
     useEffect(()=> {
         obtenerCategorias()
     }, [])
+
+    const handleSubmitNewOrder = async ()=> {
+        const token = localStorage.getItem('AUTH_TOKEN'); 
+        //e.preventDefault()
+        try {
+            const {data} = await clienteAxios.post('/pedidos', {
+                total, 
+                productos: pedido.map(x=> {
+                    return {
+                        id: x.id, 
+                        cantidad: x.cantidad,
+                    }
+                }), 
+
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+                
+            })
+            toast.success(data.message)
+            
+        } catch (error) {
+            alert('Ha ocurrido un error');
+            console.log(error)
+            console.error(error) 
+        }
+    }
 
     return(
         <QuioscoContext.Provider 
@@ -92,7 +119,8 @@ function QuioscoProvider({children}){
                 handleAgregarPedido, 
                 handleEditarCantidad, 
                 handleEliminarProductoPedido, 
-                total
+                total,
+                handleSubmitNewOrder
             }}> {children}
         </QuioscoContext.Provider>
     )
